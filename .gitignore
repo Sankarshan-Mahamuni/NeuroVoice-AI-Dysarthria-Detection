@@ -1,0 +1,15 @@
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+data/raw/
+data/processed/
+data/sample_audio/
+data/metadata/dataset_catalog.csv
+data/metadata/speaker_summary.csv
+data/metadata/feature_extraction_failures.csv
+data/metadata/feature_extraction_audit.csv
+*.log

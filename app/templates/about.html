@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}Methodology & Evaluation Report - NeuroVoice AI{% endblock %}
+
+{% block content %}
+<div class="about-container">
+  <!-- Header Hero -->
+  <div class="about-hero">
+    <span class="pill-badge pill-blue">Research Documentation</span>
+    <h1>AI-Based Dysarthria Detection Architecture</h1>
+    <p class="about-subtitle">
+      An academic speech-classification prototype evaluated on speakers held out from training. It is not a clinical screening or diagnostic device.
+    </p>
+  </div>
+
+  <!-- Key Evaluation Highlights Cards -->
+  <div class="metrics-summary-grid">
+    <div class="metric-card">
+      <span class="metric-title">Test Accuracy</span>
+      <span class="metric-number">{{ "%.2f"|format(test_metrics.accuracy * 100) if test_metrics else "Unavailable" }}{% if test_metrics %}%{% endif %}</span>
+      <span class="metric-sub">13 Unseen Test Speakers</span>
+    </div>
+    <div class="metric-card">
+      <span class="metric-title">ROC-AUC</span>
+      <span class="metric-number">{{ "%.4f"|format(test_metrics.roc_auc) if test_metrics else "Unavailable" }}</span>
+      <span class="metric-sub">Area under ROC Curve</span>
+    </div>
+    <div class="metric-card">
+      <span class="metric-title">Dysarthria Precision</span>
+      <span class="metric-number">{{ "%.2f"|format(test_metrics.precision * 100) if test_metrics else "Unavailable" }}{% if test_metrics %}%{% endif %}</span>
+      <span class="metric-sub">Low False Positive Rate</span>
+    </div>
+    <div class="metric-card">
+      <span class="metric-title">Total Independent Speakers</span>
+      <span class="metric-number">55 Speakers</span>
+      <span class="metric-sub">31 dysarthric / 24 healthy controls</span>
+    </div>
+  </div>
+
+  <!-- Section 1: Resolving Historical Limitations -->
+  <div class="card content-section">
+    <h2>1. Addressing Critical Prior Limitations</h2>
+    <div class="comparison-table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Design Dimension</th>
+            <th>Previous Approach (TORGO Baseline)</th>
+            <th>Our Rebuilt Architecture (EasyCall Corpus)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Independent Speakers</strong></td>
+            <td>Only 15 speakers (8 dysarthric, 7 healthy).</td>
+            <td><strong>55 independent human subjects</strong> (31 dysarthric, 24 healthy).</td>
+          </tr>
+          <tr>
+            <td><strong>Evaluation Split</strong></td>
+            <td>Random utterance split (caused speaker identity memorization).</td>
+            <td><strong>Strict Group Split by Speaker</strong> (Zero speaker overlap across train, val, and test).</td>
+          </tr>
+          <tr>
+            <td><strong>Clinical Ground Truth</strong></td>
+            <td>Binary label without standardized severity.</td>
+            <td>Dataset severity labels are included in source metadata; this binary model uses healthy/dysarthric labels.</td>
+          </tr>
+          <tr>
+            <td><strong>Preprocessing Consistency</strong></td>
+            <td>Fixed 100-frame truncation (discarded speech frames).</td>
+            <td><strong>Shared 144-dimensional acoustic feature pipeline.</strong> It does not apply voice-activity detection.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Section 2: Pipeline Architecture -->
+  <div class="card content-section">
+    <h2>2. End-to-End System Pipeline</h2>
+    <div class="architecture-flow">
+      <div class="arch-step">
+        <span class="step-num">01</span>
+        <h4>Audio Ingestion</h4>
+        <p>16 kHz Mono resampling, DC-offset removal, clipping & silence detection.</p>
+      </div>
+      <div class="arch-arrow">&rarr;</div>
+      <div class="arch-step">
+        <span class="step-num">02</span>
+        <h4>Feature Extraction</h4>
+        <p>144-dim representation: MFCC (20) &plus; Velocity &plus; Acceleration &plus; Spectral &plus; Prosodic energy.</p>
+      </div>
+      <div class="arch-arrow">&rarr;</div>
+      <div class="arch-step">
+        <span class="step-num">03</span>
+        <h4>Standard Normalization</h4>
+        <p>StandardScaler fitted strictly on training speakers only.</p>
+      </div>
+      <div class="arch-arrow">&rarr;</div>
+      <div class="arch-step">
+        <span class="step-num">04</span>
+        <h4>Classifier Inference</h4>
+        <p>Binary classification with uncalibrated model scores.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3: Final Held-Out Test Evaluation -->
+  <div class="card content-section">
+    <h2>3. Final Held-Out Test Evaluation (13 Unseen Speakers, {{ "{:,}".format(test_metrics.confusion_matrix.tn + test_metrics.confusion_matrix.fp + test_metrics.confusion_matrix.fn + test_metrics.confusion_matrix.tp) if test_metrics else "Unavailable" }} Audio Recordings)</h2>
+    <p>
+      The saved results report the selected classifier on a speaker-independent held-out test set. The classifier scores shown by the application are not calibrated probabilities.
+    </p>
+    
+    <div class="confusion-matrix-box">
+      <h3>Confusion Matrix</h3>
+      <table class="cm-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Predicted Healthy</th>
+            <th>Predicted Dysarthric</th>
+            <th>Class Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>Actual Healthy</th>
+            <td class="cm-cell cm-tn">{{ "{:,}".format(test_metrics.confusion_matrix.tn) if test_metrics else "Unavailable" }}{% if test_metrics %} ({{ "%.1f"|format(100 * test_metrics.confusion_matrix.tn / (test_metrics.confusion_matrix.tn + test_metrics.confusion_matrix.fp)) }}%){% endif %}<br><small>True Negatives</small></td>
+            <td class="cm-cell cm-fp">{{ "{:,}".format(test_metrics.confusion_matrix.fp) if test_metrics else "Unavailable" }}{% if test_metrics %} ({{ "%.1f"|format(100 * test_metrics.confusion_matrix.fp / (test_metrics.confusion_matrix.tn + test_metrics.confusion_matrix.fp)) }}%){% endif %}<br><small>False Positives</small></td>
+            <td>{{ "{:,}".format(test_metrics.confusion_matrix.tn + test_metrics.confusion_matrix.fp) if test_metrics else "Unavailable" }}</td>
+          </tr>
+          <tr>
+            <th>Actual Dysarthric</th>
+            <td class="cm-cell cm-fn">{{ "{:,}".format(test_metrics.confusion_matrix.fn) if test_metrics else "Unavailable" }}{% if test_metrics %} ({{ "%.1f"|format(100 * test_metrics.confusion_matrix.fn / (test_metrics.confusion_matrix.fn + test_metrics.confusion_matrix.tp)) }}%){% endif %}<br><small>False Negatives</small></td>
+            <td class="cm-cell cm-tp">{{ "{:,}".format(test_metrics.confusion_matrix.tp) if test_metrics else "Unavailable" }}{% if test_metrics %} ({{ "%.1f"|format(100 * test_metrics.confusion_matrix.tp / (test_metrics.confusion_matrix.fn + test_metrics.confusion_matrix.tp)) }}%){% endif %}<br><small>True Positives</small></td>
+            <td>{{ "{:,}".format(test_metrics.confusion_matrix.fn + test_metrics.confusion_matrix.tp) if test_metrics else "Unavailable" }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Per-Speaker Breakdown Table -->
+    <h3 style="margin-top: 2rem;">Per-Speaker Breakdown on Test Set</h3>
+    <div class="comparison-table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Speaker ID</th>
+            <th>Ground Truth Class</th>
+            <th>Clinical Severity</th>
+            <th>Total Samples</th>
+            <th>Accuracy</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if test_metrics and test_metrics.per_speaker %}
+            {% for spk in test_metrics.per_speaker %}
+            <tr>
+              <td><code>{{ spk.speaker }}</code></td>
+              <td>{{ spk.class }}</td>
+              <td>{{ spk.severity }}</td>
+              <td>{{ spk.total_samples }}</td>
+              <td><strong>{{ spk.accuracy }}</strong></td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr><td colspan="5">Per-speaker test metrics are unavailable. Run the documented final evaluation to generate them.</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Section 4: Ethical & Clinical Guidelines -->
+  <div class="card content-section disclaimer-border">
+    <h2>4. Clinical Boundaries & Responsible AI Usage</h2>
+    <p>
+      Motor speech disorders have complex causes and require professional assessment. Acoustic classification research may provide useful hypotheses, but this prototype has not been validated for screening:
+    </p>
+    <ul>
+      <li>This system is for academic demonstration only and is not intended for clinical screening or triage.</li>
+      <li>False negatives may occur in individuals with mild dysarthria who preserve articulatory compensation.</li>
+      <li>Professional diagnosis requires comprehensive clinical evaluation including cranial nerve examination, acoustic vowel space analysis, and perceptual speech assessments by qualified medical professionals.</li>
+    </ul>
+  </div>
+</div>
+{% endblock %}

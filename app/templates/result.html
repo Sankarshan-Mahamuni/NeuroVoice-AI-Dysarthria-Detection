@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Classification Result - NeuroVoice AI{% endblock %}
+
+{% block content %}
+<div class="result-page-container">
+  <div class="card result-hero-card">
+    <div class="hero-header-row">
+      <span class="classification-tag">Classification Result</span>
+      <a href="{{ url_for('main.index') }}" class="btn btn-outline btn-sm">&larr; Analyze Another Recording</a>
+    </div>
+    
+    <h1 class="prediction-title">{{ result.prediction }}</h1>
+    
+    <div class="confidence-container">
+      <div class="confidence-number-group">
+        <span class="confidence-label">Top model score (not calibrated)</span>
+        <span class="confidence-val">{{ result.model_score_pct }}%</span>
+      </div>
+      <div class="prob-bar-wrapper">
+        <div class="prob-labels">
+          <span>Healthy score ({{ result.score_healthy_pct }}%)</span>
+          <span>Dysarthric score ({{ result.score_dysarthric_pct }}%)</span>
+        </div>
+        <div class="prob-meter">
+          <div class="prob-fill-healthy" style="width: {{ result.score_healthy_pct }}%;"></div>
+          <div class="prob-fill-dysarthric" style="width: {{ result.score_dysarthric_pct }}%;"></div>
+        </div>
+      </div>
+    </div>
+    
+    <p class="summary-paragraph">{{ result.summary_note }}</p>
+
+    {% if result.warnings %}
+    <div class="result-warnings-box">
+      <h4>Signal Quality Warnings:</h4>
+      <ul>
+        {% for w in result.warnings %}
+          <li>{{ w }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Audio Metadata -->
+  <div class="card">
+    <h3>Signal Metadata</h3>
+    <div class="signal-metrics-row">
+      <div class="signal-stat">
+        <span class="stat-label">File:</span>
+        <span class="stat-val">{{ result.filename }}</span>
+      </div>
+      <div class="signal-stat">
+        <span class="stat-label">Duration:</span>
+        <span class="stat-val">{{ result.signal_metadata.duration_sec }}s</span>
+      </div>
+      <div class="signal-stat">
+        <span class="stat-label">Sample Rate:</span>
+        <span class="stat-val">{{ result.signal_metadata.sample_rate }} Hz</span>
+      </div>
+      <div class="signal-stat">
+        <span class="stat-label">RMS Energy:</span>
+        <span class="stat-val">{{ result.signal_metadata.rms_energy }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

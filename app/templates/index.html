@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}NeuroVoice AI - Dysarthria Detection System{% endblock %}
+
+{% block content %}
+<div class="dashboard-grid">
+  <!-- Left Column: Audio Input & Controls -->
+  <div class="input-panel">
+    <div class="panel-header">
+      <div class="badge-row">
+        <span class="pill-badge pill-blue">55 Independent Speakers</span>
+        <span class="pill-badge pill-purple">144 Acoustic Features</span>
+        <span class="pill-badge pill-green">{% if test_metrics %}{{ "%.2f"|format(test_metrics.accuracy * 100) }}% Held-Out Test Accuracy{% else %}Test metrics unavailable{% endif %}</span>
+      </div>
+      <h1 class="page-title">Speech Classification Demonstration</h1>
+      <p class="page-subtitle">
+        Upload or record a speech sample for a research-model classification. This demonstration is not a diagnostic tool.
+      </p>
+    </div>
+
+    <!-- Quick Preset Samples for Instant Testing -->
+    <div class="card preset-card">
+      <div class="card-title-row">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>
+        </svg>
+        <span>Validation-Speaker Examples</span>
+      </div>
+      <p class="preset-help">Use a locally extracted validation-speaker recording to try the inference flow:</p>
+      <div class="preset-buttons">
+        {% for s in samples[:8] %}
+          <button type="button" class="preset-btn {{ s.badge }}" data-sample-name="{{ s.filename }}" data-sample-label="{{ s.label }}">
+            <span class="preset-icon">&#9658;</span>
+            <span class="preset-text">{{ s.label }}: {{ s.filename.split('_')[-1] }}</span>
+          </button>
+        {% endfor %}
+      </div>
+    </div>
+
+    <section class="card reading-prompt" aria-labelledby="readingPromptTitle">
+      <div class="card-title-row">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        </svg>
+        <span id="readingPromptTitle">Read this Italian passage</span>
+      </div>
+      <p class="reading-intro">Read this short sentence naturally, then record it below.</p>
+      <blockquote class="italian-passage" lang="it">
+        Ciao, come stai?
+      </blockquote>
+      <div class="pronunciation-guide">
+        <p lang="en"><span class="guide-label">Say it like:</span> chow, <strong>KOH</strong>-meh stye?</p>
+      </div>
+      <details class="translation-details">
+        <summary>Meaning</summary>
+        <p><strong>“Hi, how are you?”</strong></p>
+      </details>
+    </section>
+
+    <!-- Upload & Recording Card -->
+    <div class="card upload-card">
+      <form id="analyzeForm" enctype="multipart/form-data">
+        <input type="hidden" name="sample_name" id="selectedSampleName" value="">
+        
+        <!-- Drag & Drop Zone -->
+        <div class="drop-zone" id="dropZone">
+          <div class="drop-zone-content" id="dropZonePrompt">
+            <div class="upload-icon-circle">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+            </div>
+            <p class="drop-text">Drag and drop audio file here</p>
+            <p class="drop-subtext">Supports WAV, MP3, OGG, FLAC, WebM, M4A (Max 15 MiB, 0.2s - 15s)</p>
+            
+            <div class="btn-group-center">
+              <label for="audioFileInput" class="btn btn-secondary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
+                Browse Audio File
+              </label>
+              <input type="file" id="audioFileInput" name="audio_file" accept=".wav,.mp3,.ogg,.flac,.webm,.m4a" style="display:none;">
+
+              <button type="button" id="recordBtn" class="btn btn-outline">
+                <span class="record-dot"></span>
+                <span id="recordBtnText">Record Live Microphone</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Selected File / Recording Preview Area -->
+          <div class="file-preview-area" id="filePreviewArea" style="display: none;">
+            <div class="file-info-header">
+              <div class="file-icon-box">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 18V5l12-2v13"/>
+                  <circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+                </svg>
+              </div>
+              <div class="file-details">
+                <span id="previewFilename" class="file-name">recording.wav</span>
+                <span id="previewFilesize" class="file-meta">Selected</span>
+              </div>
+              <button type="button" class="btn-clear" id="clearFileBtn" title="Clear selection">&times;</button>
+            </div>
+            <!-- Audio Player -->
+            <audio id="audioPlayer" controls class="custom-audio-player"></audio>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" id="submitBtn" class="btn btn-primary btn-block" disabled>
+          <span class="btn-text">Analyze Speech Sample</span>
+          <span class="spinner" id="loadingSpinner" style="display: none;"></span>
+        </button>
+      </form>
+
+      <!-- Processing Progress Feedback -->
+      <div id="processingStatus" class="processing-status" style="display: none;">
+        <div class="progress-bar-container">
+          <div class="progress-bar-fill" id="progressBarFill"></div>
+        </div>
+        <p class="status-step" id="statusStepText">Extracting 144-dimensional acoustic vectors...</p>
+      </div>
+
+      <!-- Error Alert Box -->
+      <div id="errorAlert" class="alert-box alert-error" style="{% if error %}display: flex;{% else %}display: none;{% endif %}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span id="errorMessage">{{ error or "Error processing audio file." }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Column: Interactive Diagnostic Results Display -->
+  <div class="results-panel">
+    <!-- Initial Placeholder State -->
+    <div id="resultsPlaceholder" class="card placeholder-card">
+      <div class="placeholder-graphic">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5">
+          <path d="M12 2v20M17 5v14M7 9v6M22 10v4M2 11v2"/>
+        </svg>
+      </div>
+      <h3>No Speech Sample Analyzed Yet</h3>
+      <p>
+      Select a sample or upload audio to view the model classification, uncalibrated class scores, input quality information, and spectrogram.
+      </p>
+      <div class="quick-tips">
+        <h4>Key Preprocessing Protocols:</h4>
+        <ul>
+          <li>16,000 Hz consistent resampling</li>
+          <li>144 acoustic features (MFCCs, Spectral, Prosodic)</li>
+          <li>Speaker-independent test set: 13 held-out speakers</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Active Results Container (Rendered dynamically) -->
+    <div id="resultsContainer" style="display: none;">
+      <!-- Prediction Badge Card -->
+      <div class="card result-hero-card" id="resultHeroCard">
+        <div class="hero-header-row">
+          <span class="classification-tag" id="classificationTag">Analysis Complete</span>
+          <span class="timestamp-tag" id="analysisTimestamp">Just now</span>
+        </div>
+        <h2 class="prediction-title" id="predictionTitle">Predicted Class</h2>
+        <div class="confidence-container">
+          <div class="confidence-number-group">
+            <span class="confidence-label">Top model score (not calibrated)</span>
+            <span class="confidence-val" id="modelScoreVal">--%</span>
+          </div>
+          <!-- Probability Bar -->
+          <div class="prob-bar-wrapper">
+            <div class="prob-labels">
+              <span>Healthy score (<span id="scoreHealthyText">0%</span>)</span>
+              <span>Dysarthric score (<span id="scoreDysarthricText">0%</span>)</span>
+            </div>
+            <div class="prob-meter">
+              <div class="prob-fill-healthy" id="probFillHealthy" style="width: 50%;"></div>
+              <div class="prob-fill-dysarthric" id="probFillDysarthric" style="width: 50%;"></div>
+            </div>
+          </div>
+        </div>
+        <p class="summary-paragraph" id="summaryNote">Summary description goes here.</p>
+        
+        <!-- Warnings Banner if any -->
+        <div id="resultWarnings" class="result-warnings-box" style="display: none;"></div>
+      </div>
+
+      <!-- Audio & Spectrogram Visualization Card -->
+      <div class="card visualizer-card">
+        <div class="card-title-row">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <line x1="3" y1="9" x2="21" y2="9"/>
+            <line x1="9" y1="21" x2="9" y2="9"/>
+          </svg>
+          <span>Time-Frequency Spectrogram</span>
+        </div>
+        <div class="canvas-container">
+          <canvas id="spectrogramCanvas" width="500" height="160"></canvas>
+          <div class="spectrogram-axis">
+            <span>0 Hz</span>
+            <span>4,000 Hz</span>
+            <span>8,000 Hz</span>
+          </div>
+        </div>
+        <div class="signal-metrics-row" id="signalMetricsRow">
+          <!-- Signal stats (duration, peak, rms) -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
