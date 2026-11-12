@@ -18,4 +18,6 @@ data/metadata/dataset_catalog.csv
 data/metadata/speaker_summary.csv
 data/metadata/feature_extraction_failures.csv
 data/metadata/feature_extraction_audit.csv
+reports/*.mp4
+reports/*.wav
 *.log

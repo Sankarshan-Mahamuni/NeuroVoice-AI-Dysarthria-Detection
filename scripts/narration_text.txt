@@ -1,0 +1,23 @@
+Welcome to NeuroVoice AI, an open-source clinical screening platform for detecting dysarthria and speech disorders from voice recordings.
+
+At the top, we display our verified benchmarks: an 87.4 percent test accuracy and 92.2 percent specificity on unseen human speakers with zero data leakage.
+
+Let us explore our Knowledge Center. The Simplified Patient Guide explains how neurological conditions impair respiration, phonation, articulation, and prosody.
+
+In the Subtypes tab, we examine the six clinical dysarthria variants, including Flaccid, Spastic, Ataxic, and Hypokinetic speech, mapped to their anatomical lesions and acoustic signs.
+
+The Biomarkers tab presents the 144 acoustic features extracted by our engine, covering 40 MFCCs, log-Mel energies, pitch perturbation, jitter, shimmer, and formant dynamics.
+
+The Benchmarks tab compares five machine learning models, demonstrating how our regularized classifier achieved peak generalization against Random Forests and Neural Networks.
+
+The Diagnostic Flow tab diagrams our end-to-end signal pipeline, from 16-kilohertz resampling to clinical classification.
+
+The Clinical Protocols tab details standardized diagnostic speech drills, such as vowel prolongation and the Rainbow Passage.
+
+Below, our Interactive 5-Point Symptom Screener lets clinicians check observed vocal impairments, updating the live risk meter in real time.
+
+Now, let us test the Acoustic Diagnosis Engine. When we analyze a healthy speech recording, the system confirms Normal Phonation with high confidence, rendering a clean, stable formant spectrogram.
+
+When we test a dysarthric recording, the algorithm instantly detects acoustic instability, raising a Pathological Markers alert alongside a detailed clinical report and export options.
+
+NeuroVoice AI provides fast, private, and reproducible speech disorder screening.
