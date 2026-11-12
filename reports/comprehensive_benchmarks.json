@@ -1,0 +1,158 @@
+{
+  "Logistic Regression (C=0.1)": {
+    "val": {
+      "accuracy": 0.7085,
+      "f1": 0.6754,
+      "recall": 0.6134,
+      "precision": 0.7515,
+      "specificity": 0.8016,
+      "roc_auc": 0.7196,
+      "tp": 1285,
+      "tn": 1717,
+      "fp": 425,
+      "fn": 810
+    },
+    "test": {
+      "accuracy": 0.8736,
+      "f1": 0.8715,
+      "recall": 0.8281,
+      "precision": 0.9196,
+      "specificity": 0.9223,
+      "roc_auc": 0.9545,
+      "tp": 2207,
+      "tn": 2292,
+      "fp": 193,
+      "fn": 458
+    }
+  },
+  "Logistic Regression (C=0.02, balanced)": {
+    "val": {
+      "accuracy": 0.7123,
+      "f1": 0.6748,
+      "recall": 0.6038,
+      "precision": 0.7648,
+      "specificity": 0.8184,
+      "roc_auc": 0.7111,
+      "tp": 1265,
+      "tn": 1753,
+      "fp": 389,
+      "fn": 830
+    },
+    "test": {
+      "accuracy": 0.8761,
+      "f1": 0.8732,
+      "recall": 0.8244,
+      "precision": 0.9282,
+      "specificity": 0.9316,
+      "roc_auc": 0.9583,
+      "tp": 2197,
+      "tn": 2315,
+      "fp": 170,
+      "fn": 468
+    }
+  },
+  "HistGradientBoosting": {
+    "val": {
+      "accuracy": 0.6528,
+      "f1": 0.5883,
+      "recall": 0.5017,
+      "precision": 0.7111,
+      "specificity": 0.8007,
+      "roc_auc": 0.6863,
+      "tp": 1051,
+      "tn": 1715,
+      "fp": 427,
+      "fn": 1044
+    },
+    "test": {
+      "accuracy": 0.8715,
+      "f1": 0.8674,
+      "recall": 0.8128,
+      "precision": 0.93,
+      "specificity": 0.9344,
+      "roc_auc": 0.9525,
+      "tp": 2166,
+      "tn": 2322,
+      "fp": 163,
+      "fn": 499
+    }
+  },
+  "MLP (64, 32)": {
+    "val": {
+      "accuracy": 0.6892,
+      "f1": 0.6571,
+      "recall": 0.6024,
+      "precision": 0.7228,
+      "specificity": 0.774,
+      "roc_auc": 0.7306,
+      "tp": 1262,
+      "tn": 1658,
+      "fp": 484,
+      "fn": 833
+    },
+    "test": {
+      "accuracy": 0.8517,
+      "f1": 0.8482,
+      "recall": 0.8008,
+      "precision": 0.9016,
+      "specificity": 0.9062,
+      "roc_auc": 0.9395,
+      "tp": 2134,
+      "tn": 2252,
+      "fp": 233,
+      "fn": 531
+    }
+  },
+  "Logistic Regression + Synthetic Augmentation": {
+    "val": {
+      "accuracy": 0.7057,
+      "f1": 0.6704,
+      "recall": 0.6053,
+      "precision": 0.7512,
+      "specificity": 0.8039,
+      "roc_auc": 0.7171,
+      "tp": 1268,
+      "tn": 1722,
+      "fp": 420,
+      "fn": 827
+    },
+    "test": {
+      "accuracy": 0.875,
+      "f1": 0.8727,
+      "recall": 0.8285,
+      "precision": 0.9219,
+      "specificity": 0.9247,
+      "roc_auc": 0.9555,
+      "tp": 2208,
+      "tn": 2298,
+      "fp": 187,
+      "fn": 457
+    }
+  },
+  "Clinical Soft-Voting Ensemble": {
+    "val": {
+      "accuracy": 0.7052,
+      "f1": 0.6667,
+      "recall": 0.5962,
+      "precision": 0.7561,
+      "specificity": 0.8119,
+      "roc_auc": 0.7214,
+      "tp": 1249,
+      "tn": 1739,
+      "fp": 403,
+      "fn": 846
+    },
+    "test": {
+      "accuracy": 0.8779,
+      "f1": 0.8751,
+      "recall": 0.8266,
+      "precision": 0.9295,
+      "specificity": 0.9328,
+      "roc_auc": 0.9597,
+      "tp": 2203,
+      "tn": 2318,
+      "fp": 167,
+      "fn": 462
+    }
+  }
+}

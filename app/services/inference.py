@@ -29,7 +29,6 @@ def run_dysarthria_inference(audio_input, filename="uploaded_audio"):
 
     # 3. Generate Spectrogram for UI Visualization (downsampled for fast JSON serialization)
     spec_2d = compute_log_mel_spectrogram(signal, sr, n_mels=40, max_frames=120)
-    # Convert spectrogram to a compact list of floats
     spectrogram_data = {
         "n_mels": 40,
         "n_frames": spec_2d.shape[1],
@@ -65,6 +64,7 @@ def run_dysarthria_inference(audio_input, filename="uploaded_audio"):
         alert_level = "warning"
     else:
         alert_level = "success"
+        
     summary_note = (
         f"The model classified this recording as {predicted_class.lower()}. "
         "This research model is not clinically validated; the result is not a diagnosis."

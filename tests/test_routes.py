@@ -27,10 +27,8 @@ def test_pages_and_health_endpoint():
     response = client.get("/")
     assert response.status_code == 200
     assert b"Speech Classification Demonstration" in response.data
-    assert b"Read this Italian passage" in response.data
-    assert b"Ciao, come stai?" in response.data
-    assert b"Say it like:" in response.data
-    assert b"Hi, how are you?" in response.data
+    assert b"Read this clinical speech passage" in response.data
+    assert b"Rainbow Passage" in response.data
 
     response = client.get("/about")
     assert response.status_code == 200

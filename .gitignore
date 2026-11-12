@@ -5,9 +5,15 @@ __pycache__/
 *$py.class
 *.so
 .pytest_cache/
+temp_uploads/
+
+# Raw dataset archives (2.3 GB - hosted on Hugging Face)
 data/raw/
-data/processed/
-data/sample_audio/
+
+# Heavy numpy feature arrays (35 MB)
+data/processed/*.npy
+
+# Ignored large temporary metadata
 data/metadata/dataset_catalog.csv
 data/metadata/speaker_summary.csv
 data/metadata/feature_extraction_failures.csv
