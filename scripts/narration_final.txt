@@ -1,0 +1,19 @@
+Welcome to NeuroVoice AI, an open-source clinical screening platform for detecting dysarthria from voice recordings. Our system achieves 87.4 percent test accuracy and 92.2 percent specificity on unseen human speakers with zero data leakage.
+
+In our Knowledge Center, the Patient Guide explains how motor nerve conditions impair the four speech subsystems: respiration, phonation, articulation, and prosody.
+
+The Subtypes tab maps all six clinical dysarthria variants to their underlying anatomical lesion sites and acoustic traits, from flaccid and spastic to ataxic and hypokinetic speech.
+
+The Biomarkers tab details our 144 extracted features, including MFCCs, pitch perturbation, jitter, shimmer, and vocal tract formant dynamics.
+
+The Benchmarks tab compares five machine learning models, demonstrating peak generalization with our regularized classifier against Random Forests and Neural Networks.
+
+The Diagnostic Flow tab illustrates our end-to-end signal pipeline, from 16-kilohertz audio ingestion and silence trimming to feature scaling, classification, and clinical triage.
+
+The Clinical Protocols tab details standardized diagnostic speech drills, including vowel prolongation, alternating syllables, and standardized passage reading.
+
+Below, our Interactive 5-Point Symptom Screener allows clinicians to check observed vocal impairments, updating the live risk meter in real time.
+
+Now, let us test a recording with moderate dysarthric phonation. In under 300 milliseconds, the system raises a Pathological Markers alert, classifying the recording as Dysarthric Speech with an 89 percent risk score.
+
+Here is the Formant Mel Spectrogram graph. The horizontal axis represents time in seconds, the vertical axis shows frequency up to 8 kilohertz, and colors indicate sound energy. In this dysarthric recording, notice the broken formant tracks, blurred vowel resonances, and turbulent high-frequency noise, visually confirming motor speech impairment.
